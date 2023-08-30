@@ -640,10 +640,10 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
 
 class _VerticalDragListener extends StatefulWidget {
   const _VerticalDragListener({
-    Key key,
-    @required this.child,
-    this.onDrag,
-    this.onDragFinished,
+    Key? key,
+    required this.child,
+    required this.onDrag,
+    required this.onDragFinished,
   }) : super(key: key);
 
   final Widget child;
@@ -655,11 +655,11 @@ class _VerticalDragListener extends StatefulWidget {
 }
 
 class _VerticalDragListenerState extends State<_VerticalDragListener> {
-  int _pointer;
-  VelocityTracker _pointerVelocity;
-  Axis _pointerDragAxis;
+  int? _pointer;
+  VelocityTracker? _pointerVelocity;
+  Axis? _pointerDragAxis;
 
-  double _lastY;
+  double? _lastY;
 
   @override
   Widget build(BuildContext context) {
@@ -683,7 +683,7 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
       return;
     }
 
-    _pointerVelocity = VelocityTracker();
+    _pointerVelocity = VelocityTracker.withKind(PointerDeviceKind.touch);
 
     _lastY = e.position.dy;
   }
@@ -695,7 +695,7 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
       return;
     }
 
-    _pointerVelocity.addPosition(e.timeStamp, e.position);
+    _pointerVelocity?.addPosition(e.timeStamp, e.position);
     _updateDragAxisIfNeeded(_pointerVelocity);
 
     // Don't track horizontal or unknown yet drag
@@ -703,8 +703,8 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
       return;
     }
 
-    final delta = e.position.dy - _lastY;
-    widget.onDrag?.call(delta);
+    final delta = e.position.dy - _lastY!;
+    widget.onDrag.call(delta);
 
     _lastY = e.position.dy;
   }
@@ -717,7 +717,7 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
     }
 
     if (_pointerDragAxis == Axis.vertical) {
-      widget.onDragFinished?.call(_pointerVelocity.getVelocity());
+      widget.onDragFinished.call(_pointerVelocity!.getVelocity());
     }
 
     _resetPointer();
@@ -731,7 +731,7 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
   }
 
   /// Updates current pointer drag axis (but only if it is not known already)
-  void _updateDragAxisIfNeeded(VelocityTracker v) {
+  void _updateDragAxisIfNeeded(VelocityTracker? v) {
     if (_pointerDragAxis != null) {
       return;
     }
@@ -742,7 +742,7 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
     }
   }
 
-  static Axis _dragAxis(VelocityTracker v) {
+  static Axis? _dragAxis(VelocityTracker? v) {
     if (v == null) {
       return null;
     }
@@ -763,15 +763,10 @@ class _VerticalDragListenerState extends State<_VerticalDragListener> {
   }
 }
 
+class PanelController {
+  _SlidingUpPanelState? _panelState;
 
-
-
-
-
-class PanelController{
-  _SlidingUpPanelState _panelState;
-
-  void _addState(_SlidingUpPanelState panelState){
+  void _addState(_SlidingUpPanelState panelState) {
     this._panelState = panelState;
   }
 
